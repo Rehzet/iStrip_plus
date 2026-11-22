@@ -1,10 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "istrip"
+name = "istrip-plus-cli"
 version = "0.5.0"
-description = "Home Assistant integration for controlling iStrip+ BLE LED lights"
+description = "Command-line tool for controlling iStrip+ BLE lights"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "bleak>=0.21.0",
+    "pycryptodome>=3.20.0",
+]
+
+[project.scripts]
+istrip = "istrip.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["istrip*"]
 
 [dependency-groups]
 dev = [

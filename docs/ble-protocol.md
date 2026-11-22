@@ -140,18 +140,21 @@ hardcoding would break variants we have not dumped.
 
 ## Command payloads
 
-See `custom_components/istrip/payload_generator.py` for the implementation.
+See `istrip/payload_generator.py` for the implementation.
 
 - 16-byte AES key, ECB, hardcoded in the firmware and the app.
 - 4-byte header `54 52 00 57`.
 - `GROUP_ID` of `1`.
 - `CommandType`: `JOIN_GROUP_REQUEST=1`, `RGB=2`, `RHYTHM=3`, `TIMER=4`,
   `RGB_LINE_SEQUENCE=5`, `SPEED=6`, `LIGHT=7`.
+- The tested strip expects color channels on the wire in `G,R,B` order. The CLI
+  accepts `RRGGBB`, defaults to `GRB`, and lets the user select another channel
+  order when needed. It uses the selected order when sending and reading.
 - Brightness and speed are on a `0-100` scale on the wire, not `0-255`.
 
 ---
 
-## Implications for this integration
+## Implications for the command-line client
 
 1. `KNOWN_CHAR_UUIDS` must list `0000ac52-...` first. `0000ae01-...` should be
    kept only as a last-resort fallback, and annotated as the OTA characteristic
@@ -160,10 +163,10 @@ See `custom_components/istrip/payload_generator.py` for the implementation.
    handshake, wait for the echo on the notify characteristic) over trusting UUID
    order. Ordering is a hint; the probe is the source of truth.
 3. Notify discovery stays property-based, matching the app.
-4. `char_uuid` is persisted into the config entry at setup time. Existing
-   installs that were onboarded onto `ae01` will keep writing to the OTA
-   characteristic forever unless a config-entry migration clears the stored
-   value and forces re-discovery.
+4. The command-line client probes writable characteristics using the join
+   handshake echo when the device supports notifications. It prioritizes
+   `ac52`; `ae01` remains a last-resort compatibility path for variants that
+   expose no confirmed control characteristic.
 
 ## Sources
 

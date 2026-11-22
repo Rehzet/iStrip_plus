@@ -1,5 +1,9 @@
 *.apk
 venv
+.venv/
+build/
+dist/
+*.egg-info/
 .history
 __pycache__
 *.txt
